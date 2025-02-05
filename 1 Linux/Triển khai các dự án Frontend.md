@@ -22,7 +22,7 @@ Giải thích:
 `scp <tên thư mục chứa dự án> <tên user đăng nhập trên ubuntu server>@<địa chỉ ip của ubuntu server>:<vị trí lưu tệp trên ubuntu server>`
 
 ```
-scp todolist.zip manhnv@192.168.1.110:/home/manhnv
+scp todolist.zip manhnv@192.168.1.110:/home/ubuntu
 ```
 
 ## Cài công cụ unzip
@@ -40,21 +40,21 @@ unzip todolist.zip
 Bắt đầu
 ---------
 
-## Tạo thư mục mới và di chuyển project vào thư mục vừa tạo
+## 1 Tạo thư mục mới và di chuyển project vào thư mục vừa tạo
 ```
 mkdir /projects
 mv todolist /projects/
 ls -l /projects/
 ```
 
-## Thêm user riêng của dự án
+## 2 Thêm user riêng của dự án
 ![image](https://github.com/user-attachments/assets/dae376a6-79b2-4c99-aa73-3168b6cc36f5)
 
 ```
 adduser todolist
 ```
 
-## Thay đổi chủ sở hữu sang user todolist
+## 3 Thay đổi chủ sở hữu sang user todolist
 ![image](https://github.com/user-attachments/assets/2f6e105d-f13f-43a9-b035-7e970d661673)
 ```
 chown -R todolist:todolist /projects/todolist/
@@ -76,12 +76,12 @@ apt install nodejs -y
 apt install npm -y
 ```
 
-## Chuyển đổi user
+## 4 Chuyển đổi user
 ```
 su todolist
 ```
 
-## Cài đặt npm
+## 5 Cài đặt npm
 ```
 npm install
 npm run build
@@ -108,7 +108,7 @@ npm run serve
 ```
 
 -------------
-Run dự án bằng Nginx
+6 Run dự án bằng Nginx
 ------------
 
 
@@ -186,6 +186,75 @@ systemctl restart nginx
 ### Có thể sử dụng câu lệnh thay thế 
 
 systemctl restart nginx <=> nginx -s reload
+
+
+------------------
+
+Triển khai dự án bằng ReactJS
+------------------
+
+## 1/ Di chuyển dự án lên server
+```
+scp .\vision.zip ubuntu@http://192.168.81.95:/home/ubuntu
+```
+
+```
+sudo -i
+cd /home/ubuntu
+unzip vision.zip
+mv vision /projects/
+```
+
+## 2/ Tạo user mới
+```
+adduser vision
+```
+
+## 3/ Thay đổi chủ sở hữu và quyền tác động của folder vision
+```
+chown -R vision. /projects/vision/
+chmod -R 750 /projects/vision/
+```
+
+## 4/ Chuyển qua tài khoản mới tạo
+```
+cd /projects/vision
+ls
+su vision
+```
+
+## 5/ Cài công cụ npm cho project
+```
+npm install
+```
+
+## 6/ Triển khai dự án (Tạo ra 1 service để chạy dự án này)
+```
+exit
+nano /lib/systemd/system/vision.service
+```
+
+```
+[Service]
+Type=simple
+User=vision
+Restart=on-failure
+WorkingDirectory=/projects/vision/
+ExecStart=npm run start -- --port=3000
+```
+
+```
+systemctl daemon-reload
+systemctl start vision
+systemctl status vision
+```
+
+
+
+
+
+
+
 
 
 
