@@ -36,6 +36,10 @@ cd /home/ubuntu
 unzip todolist.zip
 ```
 
+---------
+Bắt đầu
+---------
+
 ## Tạo thư mục mới và di chuyển project vào thư mục vừa tạo
 ```
 mkdir /projects
