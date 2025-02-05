@@ -65,12 +65,123 @@ chmod -R 750 /projects/todolist
 ```
 
 
-## 
+## Build and Run
+```
+apt update
+apt install nodejs -y
+apt install npm -y
+```
+
+## Chuyển đổi user
+```
+su todolist
+```
+
+## Cài đặt npm
+```
+npm install
+npm run build
+```
+
+```
+exit
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+apt-get install -y nodejs
+```
+
+```
+su todolist
+npm run build
+```
+![image](https://github.com/user-attachments/assets/34566445-3c5f-48e1-ac75-1c99c61e1944)
+
+Như vậy nó đã build cho mình 1 thư mục tên là dist
+
+## Run dự án
+
+```
+npm run serve
+```
+
+-------------
+Run dự án bằng Nginx
+------------
 
 
+```
+exit
+apt install nginx -y
+```
+
+Mặc định khi cài Nginx sẽ chạy trên cổng 80.
+
+Kiểm tra
+```
+netstat -tlpun
+```
+
+## Cấu hình Nginx
+
+```
+cd
+cd /etc/nginx
+nano conf.d/todolist.conf
+```
+
+```
+server {
+  listen 8081;
+  root /projects/todolist/dist/;
+  index index.html;
+  try_files $uri $uri/ /index.html;
+}
+```
+
+```
+nginx -t
+```
+
+```
+systemctl restart nginx
+```
+
+## Fix lỗi
+![image](https://github.com/user-attachments/assets/aec8aa84-1b80-41f1-8b58-1ea201bde764)
 
 
+![image](https://github.com/user-attachments/assets/fe9fbaf0-7b6f-4bd4-8554-05c99ab0fb13)
+Ta thấy những người dùng khác sẽ không có quyền truy cập đến folder todolist này.
 
+-> Mỗi một công cụ đều sẽ có 1 user riêng của nó. Nginx cũng không ngoại lệ.
+
+Mở file user
+```
+cat /etc/passwd
+```
+![image](https://github.com/user-attachments/assets/f3081db8-42bd-4a4c-b70c-5dadcb24c7a1)
+
+Ta mới tạo thêm 1 user là todolist
+
+-> Kiểm tra user của Nginx là user gì
+```
+cat /etc/nginx/nginx.conf
+```
+
+![image](https://github.com/user-attachments/assets/a4a92fe5-3985-455f-979b-984a90a63d57)
+
+Như vậy ta thấy Nginx đang sử dụng user là www-data
+
+-> Để dự án của mình chạy được trên nginx tức là user của nginx tối thiểu phải nằm trong group todolist
+
+Thêm www-data vào group todolist 
+```
+usermod -aG todolist www-data
+systemctl restart nginx
+```
+
+### Có thể sử dụng câu lệnh thay thế 
+
+systemctl restart nginx <=> nginx -s reload
 
 
 
