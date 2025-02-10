@@ -125,11 +125,10 @@ netstat -tlpun
 ```
 
 ## Cấu hình Nginx
+![image](https://github.com/user-attachments/assets/cb2842f5-846d-48a8-880a-011ab50bec1a)
 
 ```
-cd
-cd /etc/nginx
-nano conf.d/todolist.conf
+nano /etc/nginx/conf.d/todolist.conf
 ```
 
 ```
