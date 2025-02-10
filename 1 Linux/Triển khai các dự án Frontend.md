@@ -201,6 +201,9 @@ scp .\vision.zip ubuntu@192.168.81.95:/home/ubuntu
 
 ```
 sudo -i
+```
+
+```
 cd /home/ubuntu
 unzip vision.zip
 mv vision /projects/
@@ -232,6 +235,9 @@ npm install
 ## 6/ Triển khai dự án (Tạo ra 1 service để chạy dự án này)
 ```
 exit
+```
+
+```
 nano /lib/systemd/system/vision.service
 ```
 
