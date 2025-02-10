@@ -154,6 +154,7 @@ systemctl restart nginx
 
 
 ![image](https://github.com/user-attachments/assets/fe9fbaf0-7b6f-4bd4-8554-05c99ab0fb13)
+
 Ta thấy những người dùng khác sẽ không có quyền truy cập đến folder todolist này.
 
 -> Mỗi một công cụ đều sẽ có 1 user riêng của nó. Nginx cũng không ngoại lệ.
@@ -195,7 +196,7 @@ Triển khai dự án bằng ReactJS
 
 ## 1/ Di chuyển dự án lên server
 ```
-scp .\vision.zip ubuntu@http://192.168.81.95:/home/ubuntu
+scp .\vision.zip ubuntu@192.168.81.95:/home/ubuntu
 ```
 
 ```
