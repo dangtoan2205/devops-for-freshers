@@ -109,9 +109,12 @@ sudo chown root:devops2  datas/
 ![image](https://github.com/user-attachments/assets/15f8a75a-4f5d-4d9f-9591-28fbe1355857)
 
 ## Giải thích chi tiết
+rwx : 3 ký tự đại diện cho các quyền (đọc, ghi, thực thi)
+
 ![image](https://github.com/user-attachments/assets/67c9d2a2-4d7a-4254-b441-03302581d35d)
 
 drwxrwxr-x  -> ugo (user | group | owner)
+
     - d : đại diện cho đây là thư mục. Nếu là - thì là tệp.
     - rwx : 3 ký tự tiếp theo đại diện cho các quyền (đọc, ghi, thực thi) -> đại diện cho các quyền của chủ sở hữu -> ở đây là root
     - rwx : 3 ký tự tiếp theo đại diện cho các quyền (đọc, ghi, thực thi) -> đại diện cho các quyền của nhóm sở hữu -> ở đây là devops2
@@ -123,6 +126,7 @@ sudo chmod g=rwx datas
 ```
 
 VD: Thêm nhiều quyền cùng một lúc
+
 ![image](https://github.com/user-attachments/assets/a4f1edff-2f01-409b-b36b-8d7e000031ab)
 ```
 sudo chmod u=rwx,g=rx,o=- datas/
