@@ -60,7 +60,10 @@ sudo apt remove net-tools
 ```
 
 
-
+## Để chỉ sao chép toàn bộ dữ liệu bên trong thư mục snipeit (chứ không sao chép cả thư mục snipeit), bạn cần chỉ định đúng cách trong lệnh. Dưới đây là cách làm:
+```
+sudo cp -r snipeit/* snipeit-clone/
+```
 
 
 
