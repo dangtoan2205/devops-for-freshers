@@ -198,20 +198,97 @@ use shoeshop;
 source /projects/shoeshop/shoe_shopdb.sql
 ```
 
+## 5. Sửa file cấu hình database
+
+```
+nano /projects/shoeshop/src/main/resources/application.properties
+```
+
+![image](https://github.com/user-attachments/assets/ca8d42b1-da54-4f78-a5a6-36910b26738b)
 
 
+## 6. Build
+```
+cd /projects/shoeshop/
+mvn install -DskipTests=true
+```
+
+- -DskipTests=true : bỏ qua bước test của tool maven
+
+![image](https://github.com/user-attachments/assets/75a2a545-8961-490c-b967-2106f23fcbe6)
+
+Như vậy đã build dự án thành công được lưu ở thư mục `target`
+
+![image](https://github.com/user-attachments/assets/d8ea2d17-b145-468e-ac46-04b8b081f386)
+
+File build là file .jar
+
+## 7. Run 
+```
+java -jar target/shoe-ShoppingCart-0.0.1-SNAPSHOT.jar
+```
+
+![image](https://github.com/user-attachments/assets/3221528c-f5e1-44b1-a0b0-7adf03b78bbe)
+
+Dự án đã được chạy thành công với port 8080.
 
 
+Câu lệnh chạy dưới nền
+```
+nohup java -jar target/shoe-ShoppingCart-0.0.1-SNAPSHOT.jar 2>&1 &
+```
+
+Kiểm tra tiến trình dự án đang chạy
+
+```
+ps -ef| grep shoe
+```
+
+Dừng dự án đang chạy
+
+```
+kill -9 56552
+```
 
 
+-9 là sẽ buộc dừng
+-56552 là piID
 
 
+## 8. Chạy dự án với user đúng của dựa án
 
+```
+su shoeshop
+```
 
+```
+ls -l
+```
 
+Xóa tệp và thư mục vừa được build dưới quyền root đi và sẽ run dưới user shoeshop
+![image](https://github.com/user-attachments/assets/1099c06b-fc6c-4e35-88f4-98134f626c59)
 
+```
+exit
+```
 
+```
+rm -rf nohup.out target/
+```
 
+```
+su shoeshop
+```
+
+Run dự án
+
+```
+mvn install -DskipTest=true
+```
+
+```
+nohup java -jar target/shoe-ShoppingCart-0.0.1-SNAPSHOT.jar 2>&1 &
+```
 
 
 
