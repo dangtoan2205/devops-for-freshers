@@ -44,44 +44,155 @@ chmod -R 750 /projects/shoeshop/
 
 ## 4. Build dự án 
 
-`Để có thể build dự án bằng Java ta có thể search từ khóa như sau: how to build java project`
+`Để có thể build dự án bằng Java ta có thể search từ khóa như sau: how to build java project` -> `how to install java on ubuntu`
 
 - Ta sẽ cần sử dụng Java và Maven
 - Ta cần có 1 file `pom.xml`
 
+## Cài đặt
+
+`Chú ý: verion của công cụ phải lớn hơn hoặc bằng version của dự án`
+
+VD trong dự án có file cấu hình lưu ở `pom.xml`
+
+![image](https://github.com/user-attachments/assets/c6462071-71c1-43b1-91ea-53d1bd1ede38)
+
+Như vậy dự án yêu cầu java version 1.8
+
+```
+apt install openjdk-17-jdk openjdk-17-jre
+```
+
+Cài maven
+
+```
+apt install maven
+```
+
+Ta thấy trong dự án có cả database -> search: ` Config database spring boot`
+
+Ta sẽ cần 1 file là `application.properties`
+
+![image](https://github.com/user-attachments/assets/daccce4e-e9cb-46ef-a06e-55f889598905)
 
 
+![image](https://github.com/user-attachments/assets/5afc028d-e07e-4b95-9d89-1ac419577ec9)
 
+Ta sẽ cần các thông tin của DB như sau:
+- address_server
+- port
+- database_name
+- username
+- password
 
+-> Tiến hành cài đặt Maria DB
 
+```
+apt install mariadb-server
+```
 
+Kiểm tra
+----
+![image](https://github.com/user-attachments/assets/8365ca82-0001-47ec-90c1-fe2bb41e9605)
 
+Như vậy ta thấy địa chỉ 127.0.0.0:3306 này chỉ chạy trên local (tức là chỉ truy cập được trên ubuntu của mình)
 
+Để được từ bên ngoài có thể truy cạp vào địa chỉ ip DB của mình thì mình cần cấu hình public ra bên ngoài
 
+Các bước thực hiện:
 
+```
+systemctl stop mariadb
+```
 
+```
+ls /etc/mysql/mariadb.conf.d/
+```
 
+```
+nano /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+![image](https://github.com/user-attachments/assets/db32016c-68b4-4dd3-ad6b-9e73c9cf1e61)
 
+![image](https://github.com/user-attachments/assets/25621dd6-76f3-4572-9c53-098c07f5181d)
 
+Tìm đến dòng `bind-address`
 
+Và sửa `127.0.0.1` thành `0.0.0.0`
 
+```
+systemctl restart mariadb
+```
 
+Sau đó kiểm tra lại DB đã được public hay chưa
+```
+netstat -tplun
+```
 
+![image](https://github.com/user-attachments/assets/6e48bd50-431e-46eb-a36b-da6e9e74771a)
 
+Ta thấy 0.0.0.0:3306 đã được public ra bên ngoài
 
+-> Có thể cài đặt server db riêng ra 
 
+Thêm file `shoe_shopdb.sql` vào trong maria db
+----
 
+```
+mysql -u root
+```
 
+```
+show databases;
+```
 
+```
+create database shoeshop;
+create user 'shoeshop'@'%' identified by 'shoeshop';
+grant all privileges on shoeshop.* to 'shoeshop'@'%';
+flush privileges;
+```
 
+Chú giải:
 
+- `create user 'user name'@'phạm vi'  identified by 'mật khẩu';`
 
+-> % là có thẻ truy cập được đến tất cả các server
 
+- gán quyền cho user này tác động đến nhưng đối tượng nào:
 
+`grant all privileges on (user name).(áp dụng ở đâu) to '(user name)';`
 
+-> * là trên tất cả các tài nguyên
 
+- flush privileges;
 
+-> Lưu lại các quyền
 
+Tiến hành đăng nhập bằng user `shoeshop` mà mình vừa tạo
+
+```
+mysql -h 192.168.81.31 -P 3306 -u shoeshop -p
+```
+
+Chú giải:
+
+- h : viết tắt của từ host là Ip server của mình
+- P : chỉ định port của mysql
+- u : user
+- p : mật khẩu
+
+kiểm tra database đã có hay chưa
+```
+show databases;
+```
+
+Tiến hành imporrt database `shoe_shopdb.sql` vào để sử dụng.
+-----
+```
+use shoeshop;
+source /projects/shoeshop/shoe_shopdb.sql
+```
 
 
 
