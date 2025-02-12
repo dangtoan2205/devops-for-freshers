@@ -172,6 +172,10 @@ Chú giải:
 Tiến hành đăng nhập bằng user `shoeshop` mà mình vừa tạo
 
 ```
+exit
+```
+
+```
 mysql -h 192.168.81.31 -P 3306 -u shoeshop -p
 ```
 
