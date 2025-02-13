@@ -207,6 +207,7 @@ c:\Windows\System32\Drivers\etc
 192.168.80.106 git.elroydevops.tech
 ```
 
+![image](https://github.com/user-attachments/assets/bbdd22aa-2caa-43d9-a1ce-49b74fa01e86)
 
 
 
