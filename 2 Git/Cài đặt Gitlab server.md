@@ -8,7 +8,10 @@ sudo -i
 
  Lên gg search: `gitlab ee packages`
 
- Link: `https://packages.gitlab.com/gitlab/gitlab-ee/packages/ubuntu/focal/gitlab-ee_15.11.13-ee.0_arm64.deb`
+ Link: 
+ ```
+ https://packages.gitlab.com/gitlab/gitlab-ee/packages/ubuntu/focal/gitlab-ee_15.11.13-ee.0_arm64.deb
+```
 
 ![image](https://github.com/user-attachments/assets/a041d598-dbe2-4a50-ba9a-8f9ba0089470)
 
