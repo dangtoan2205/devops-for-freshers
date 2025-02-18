@@ -195,19 +195,112 @@ Chọn CI/CD để xem action đang chạy
 ![image](https://github.com/user-attachments/assets/7110e4d5-6eab-44aa-be5c-d16b3d6fb670)
 
 
+```
+stages:
+    - build
+    - deploy
+    - checklog
+
+build:
+    stage: build
+    before_script:
+        - sudo apt-get update
+        - sudo apt-get install -y maven
+        - mvn -version 
+    script:
+        - mvn clean install -DskipTests
+    tags:
+        - gitlab-server
+```
+
+```
+su gitlab-runner
+cd /home/gitlab-runner/builds/4dzhtFov/0/shoeshop/shoeshop
+```
+
+![image](https://github.com/user-attachments/assets/a5ec54a8-962c-4601-8b01-7c005b20f740)
+
+-> Như vậy ta đã thấy file `target` là build của dự án
 
 
+Tiếp theo 
 
+```
+mkdir /datas
+mkdir /datas/shoeshop
+```
 
+![image](https://github.com/user-attachments/assets/67d29577-1731-44f1-a76b-6fab3a9a2d21)
 
+-> Cấu hình quan trọng: cho phép gitlab-runner sử dụng quyền sudo mà không cần password
+------
 
+```
+visudo
+```
 
+![image](https://github.com/user-attachments/assets/5b34de83-e731-479a-8a9e-ebe12b7deed5)
 
+```
+gitlab-runner ALL=(ALL) NOPASSWD: /bin/cp*
+gitlab-runner ALL=(ALL) NOPASSWD: /bin/choen*
+gitlab-runner ALL=(ALL) NOPASSWD: /bin/su shoeshop*
 
+![image](https://github.com/user-attachments/assets/92625409-47fc-462b-b937-09b44c71f85f)
 
+```
+hoặc
+```
+gitlab-runner ALL=(ALL) NOPASSWD: /bin/cp*, /bin/chown*, /bin/su shoeshop*
+```
 
+-> restart lại gitlab-runner
 
+```
+sudo systemctl restart gitlab-runner
+```
 
+gitlab-runner ALL=(ALL:ALL) được hiểu là áp dụng cho user,group ALL(user:group) -> để ALL=(ALL) là áp dụng cho tất cả
+
+![image](https://github.com/user-attachments/assets/060c1923-1c31-4900-9c0c-29b52f983566)
+
+-> Cấu hình trên file .gitlab-ci.yml
+-------------
+
+![image](https://github.com/user-attachments/assets/e1143fde-817c-4c01-9be7-41a7dd17a19d)
+
+```
+stages:
+    - build
+    - deploy
+    - checklog
+
+build:
+    stage: build
+    variables:
+        GIT_STRATEGY: clone # Tiến hành clone code mới về
+    script:
+        - mvn clean install -DskipTests
+    tags:
+        - gitlab-server
+
+deploy:
+    stage: deploy
+    variables:
+        GIT_STRATEGY: none # Test
+    script:
+        - mkdir -p /datas/shoeshop
+        - cd $CI_PROJECT_DIR # Copy shoe-ShoppingCart-0.0.1-SNAPSHOT.jar vào thư mục /datas/shoeshop
+        - sudo chown -R shoeshop:shoeshop /datas/shoeshop # cấp quyền sở hữu cho shoeshop
+        - sudo su shoeshop -c "cd /datas/shoeshop/; nohup java -jar shoe-ShoppingCart-0.0.1-SNAPSHOT.jar 2>&1 &" # chuyển qua user shoeshop và cd vào /datas/shoeshop và chạy dự án
+    tags:
+        - gitlab-server
+
+```
+
+```
+Config(pipeline): add script deploy stage
+```
 
 
 
