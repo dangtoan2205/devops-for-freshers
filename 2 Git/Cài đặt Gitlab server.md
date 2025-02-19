@@ -146,6 +146,7 @@ Lưu thay đổi
 
 
 Tiếp theo sẽ đến phần CI/CD
+
 ![image](https://github.com/user-attachments/assets/88c629fc-1f57-46d1-ae61-9c0bf0daaaf1)
 
 Chọn dòng này và bấm `Expand`
