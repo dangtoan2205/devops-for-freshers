@@ -35,6 +35,12 @@ Copy dòng này dán vào gitlab server
 curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
 ```
 
+hoặc cài câu lệnh như sau nếu bị lỗi:
+
+```
+wget https://packages.gitlab.com/gitlab/gitlab-ee/packages/ubuntu/focal/gitlab-ee_15.11.13-ee.0_amd64.deb/download.deb -O gitlab-ee_15.11.13-ee.0_amd64.deb
+```
+
 Copy dòng tiếp theo để install gitlab ee
 
 ```
@@ -77,6 +83,11 @@ external_url 'http://git.elroydevops.tech'
 ```
 gitlab-ctl reconfigure
 ```
+
+Chờ quá trình cài đặt hoàn tất
+-----
+
+![image](https://github.com/user-attachments/assets/9ad4ee9e-54e8-4c45-89eb-695236c410b0)
 
 Add host domain for window
 ------
