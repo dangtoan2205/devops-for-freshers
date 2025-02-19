@@ -15,23 +15,21 @@ sudo -i
 
 ![image](https://github.com/user-attachments/assets/a041d598-dbe2-4a50-ba9a-8f9ba0089470)
 
-Tìm kiếm version sau:  `gitlab-ee_14.4.1-ee.0_arm64.deb`
+Tìm kiếm version sau:  `gitlab-ee_15.11.13-ee.0_arm64.deb`
 
 -> Nên dùng bản version này
 
-![image](https://github.com/user-attachments/assets/44eb8b35-3707-4089-b357-46560ee39dbc)
+![image](https://github.com/user-attachments/assets/e51d5077-1306-499a-a544-8d167ca70a5c)
 
 Chọn bản cài cho Ubuntu
 
-![image](https://github.com/user-attachments/assets/b544bb41-61fd-4801-9d1c-e006422c83a7)
+![image](https://github.com/user-attachments/assets/0e4d5c5c-8802-4c71-a8fc-b15b38325091)
 
 Click
 
-![image](https://github.com/user-attachments/assets/6f804a84-0b58-4aab-beab-f43ae4e8e386)
-
 Copy dòng này dán vào gitlab server
 
-![image](https://github.com/user-attachments/assets/85ca6430-e67c-4144-88fe-73fb9328bc69)
+![image](https://github.com/user-attachments/assets/8f22cbbc-6b95-4905-aea8-a5e3c6015723)
 
 ```
 curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script.deb.sh | sudo bash
@@ -40,7 +38,7 @@ curl -s https://packages.gitlab.com/install/repositories/gitlab/gitlab-ee/script
 Copy dòng tiếp theo để install gitlab ee
 
 ```
-apt-get install gitlab-ee=14.4.1-ee.0
+sudo apt-get install gitlab-ee=15.11.13-ee.0
 ```
 
 Truy cập gitlab server bằng 1 domain
