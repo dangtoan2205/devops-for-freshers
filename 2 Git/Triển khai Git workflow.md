@@ -50,7 +50,7 @@ Bên trái là chọn nhánh muốn hợp nhất vào -> nhánh `develop`
 
 ![image](https://github.com/user-attachments/assets/c0533686-345c-4674-acdd-19badb55147d)
 
-5. Cấu hình ngăn cho dev tự có quyền `approved` và `merge` vào nhánh develop
+## 5. Cấu hình ngăn cho dev tự có quyền `approved` và `merge` vào nhánh develop
 --------
 
 Vào gitlab administrator
@@ -81,7 +81,9 @@ Tiến hành chọn bảo vệ nhánh `develop`
       - Maintainers  (Có thể commit trực tiếp trên nhánh đó)
       - No one  (Bất chứ khi mình làm cái gì hay chức năng gì đó đều phải cần gửi 1 request vào để lưu lại lịch sử chỉnh sửa)
 
-            
+
+![image](https://github.com/user-attachments/assets/233f5cee-f18c-4064-aff9-513c6f8d8427)
+
 
 Admin
 
