@@ -251,8 +251,8 @@ gitlab-runner ALL=(ALL) NOPASSWD: /bin/su shoeshop*
 
 ![image](https://github.com/user-attachments/assets/92625409-47fc-462b-b937-09b44c71f85f)
 
-```
 hoặc
+
 ```
 gitlab-runner ALL=(ALL) NOPASSWD: /bin/cp*, /bin/chown*, /bin/su shoeshop*
 ```
