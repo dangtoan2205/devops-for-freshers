@@ -220,7 +220,18 @@ c:\Windows\System32\Drivers\etc
 ![image](https://github.com/user-attachments/assets/bbdd22aa-2caa-43d9-a1ce-49b74fa01e86)
 
 
+**Bật dịch vụ GitLab khi khởi động**
 
+```
+systemctl enable gitlab-runsvdir
+```
+
+```
+systemctl is-enabled gitlab-runsvdir
+```
+
+- Nếu kết quả là `disabled`, bạn cần bật dịch vụ.
+- Nếu là `enabled`, GitLab đã được cấu hình tự động chạy.
 
 
 
