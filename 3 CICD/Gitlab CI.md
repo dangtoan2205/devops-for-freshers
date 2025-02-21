@@ -603,7 +603,7 @@ deploy:
 
     - echo "🚀 Copy project mới..."
     - cd /home/gitlab-runner/builds/fyapp6-u/0/$projectuser/$projectuser/target
-    - sudo cp $projectname-$version.jar /datas/$projectuser/
+    - sudo cp $projectname-$version.jar $projectpath
     - sudo chown -R gitlab-runner:gitlab-runner $projectpath
 
     - echo "🔑 Chuyển sang user '$projectuser' để triển khai..."
@@ -611,7 +611,7 @@ deploy:
     - cd $projectpath
     - ls
     - echo "🚀 Khởi chạy project mới..."
-    - nohup java -jar /datas/$projectuser/$projectname-$version.jar --server.port=$port > /datas/$projectuser/app.log 2>&1 &
+    - nohup java -jar $projectpath/$projectname-$version.jar --server.port=$port > $projectpath/app.log 2>&1 &
 
     - echo "✅ Deployment hoàn tất!"
   tags:
