@@ -708,3 +708,246 @@ netstat -tplun
 ```
 
 ![image](https://github.com/user-attachments/assets/b6446753-fd1b-4eb7-8bbb-280d7af5a1e6)
+
+
+Thêm tùy chọn khi nào được đánh tag thì (dự án) bước CI mới chạy
+--------
+
+
+Thêm:
+
+```
+only:
+   - tags
+```
+
+```
+variables:
+  projectname: shoe-ShoppingCart
+  version: 0.0.1-SNAPSHOT
+  projectuser: shoeshop
+  projectpath: /datas/$projectuser
+  port: 8081
+
+
+stages:
+  - build
+  - deploy
+  - checklog
+
+build:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone 
+  script:
+    - echo "🔍 Kiểm tra JDK..."
+    - |
+      if which java > /dev/null && java -version 2>&1 | grep "17"; then
+        echo "✅ JDK 17 đã được cài đặt."
+      else
+        echo "❌ JDK 17 chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra Maven..."
+    - |
+      if which mvn > /dev/null; then
+        echo "✅ Maven đã được cài đặt."
+      else
+        echo "❌ Maven chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra MariaDB..."
+    - |
+      if systemctl is-active --quiet mariadb || which mariadb > /dev/null; then
+        echo "✅ MariaDB đã được cài đặt và đang chạy."
+      else
+        echo "❌ MariaDB chưa được cài hoặc không hoạt động."
+      fi
+
+    - echo "🔍 Kiểm tra Docker..."
+    - |
+      if which docker > /dev/null && docker --version; then
+        echo "✅ Docker đã được cài đặt."
+      else
+        echo "❌ Docker chưa được cài."
+      fi
+
+    - mvn install -DskipTests=true
+  tags:
+    - ubuntu-srv
+  only:
+    - tags
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "🔍 Chuyển sang user '$projectuser' để kiểm tra và kill tiến trình cũ..."
+    - |
+      sudo su $projectuser -c '
+        OLD_PID=$(ps -ef | grep "$projectname-$version.jar" | grep -v grep | awk "{print \$2}")
+        if [ -n "$OLD_PID" ]; then
+          echo "⚠️ Tiến trình cũ đang chạy với PID: $OLD_PID"
+          echo "🛑 Dừng tiến trình cũ..."
+          kill -9 $OLD_PID || echo "⚠️ Không thể kill PID $OLD_PID"
+          sleep 5
+        else
+          echo "✅ Không có tiến trình $projectuser cũ đang chạy."
+        fi
+      '
+
+    - echo "🚀 Copy project mới..."
+    - cd /home/gitlab-runner/builds/fyapp6-u/0/$projectuser/$projectuser/target
+    - sudo cp $projectname-$version.jar $projectpath
+    - sudo chown -R gitlab-runner:gitlab-runner $projectpath
+
+    - echo "🔑 Chuyển sang user '$projectuser' để triển khai..."
+    - sudo su $projectuser
+    - cd $projectpath
+    - ls
+    - echo "🚀 Khởi chạy project mới..."
+    - nohup java -jar $projectpath/$projectname-$version.jar --server.port=$port > $projectpath/app.log 2>&1 &
+
+    - echo "✅ Deployment hoàn tất!"
+  tags:
+    - ubuntu-srv
+  only:
+    - tags
+```
+
+```
+Config(pipline): update config tag
+```
+
+Để chạy được thì ta cần đánh tag
+
+`Repository` -> `Tags` -> `New tag`
+
+![image](https://github.com/user-attachments/assets/5ebf1cb1-b4a9-420a-87fb-7b0695bc88ec)
+
+-> Ví dụ: Hôm nay triển khai chức năng này trong môi trường `dev`
+
+![image](https://github.com/user-attachments/assets/77ac4b62-7b3b-4552-9cb4-bded6d108c7d)
+
+-> Khi đó pipline mới chạy
+
+## 4. Hoàn thiện (Thêm stage showlog)
+
+```
+variables:
+  projectname: shoe-ShoppingCart
+  version: 0.0.1-SNAPSHOT
+  projectuser: shoeshop
+  projectpath: /datas/$projectuser
+  port: 8081
+
+
+stages:
+  - build
+  - deploy
+  - showlog
+
+build:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone 
+  script:
+    - echo "🔍 Kiểm tra JDK..."
+    - |
+      if which java > /dev/null && java -version 2>&1 | grep "17"; then
+        echo "✅ JDK 17 đã được cài đặt."
+      else
+        echo "❌ JDK 17 chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra Maven..."
+    - |
+      if which mvn > /dev/null; then
+        echo "✅ Maven đã được cài đặt."
+      else
+        echo "❌ Maven chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra MariaDB..."
+    - |
+      if systemctl is-active --quiet mariadb || which mariadb > /dev/null; then
+        echo "✅ MariaDB đã được cài đặt và đang chạy."
+      else
+        echo "❌ MariaDB chưa được cài hoặc không hoạt động."
+      fi
+
+    - echo "🔍 Kiểm tra Docker..."
+    - |
+      if which docker > /dev/null && docker --version; then
+        echo "✅ Docker đã được cài đặt."
+      else
+        echo "❌ Docker chưa được cài."
+      fi
+
+    - mvn install -DskipTests=true
+  tags:
+    - ubuntu-srv
+  only:
+    - tags
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "🔍 Chuyển sang user '$projectuser' để kiểm tra và kill tiến trình cũ..."
+    - |
+      sudo su $projectuser -c '
+        OLD_PID=$(ps -ef | grep "$projectname-$version.jar" | grep -v grep | awk "{print \$2}")
+        if [ -n "$OLD_PID" ]; then
+          echo "⚠️ Tiến trình cũ đang chạy với PID: $OLD_PID"
+          echo "🛑 Dừng tiến trình cũ..."
+          kill -9 $OLD_PID || echo "⚠️ Không thể kill PID $OLD_PID"
+          sleep 5
+        else
+          echo "✅ Không có tiến trình $projectuser cũ đang chạy."
+        fi
+      '
+
+    - echo "🚀 Copy project mới..."
+    - cd /home/gitlab-runner/builds/fyapp6-u/0/$projectuser/$projectuser/target
+    - sudo cp $projectname-$version.jar $projectpath
+    - sudo chown -R gitlab-runner:gitlab-runner $projectpath
+
+    - echo "🔑 Chuyển sang user '$projectuser' để triển khai..."
+    - sudo su $projectuser
+    - cd $projectpath
+    - ls
+    - echo "🚀 Khởi chạy project mới..."
+    - nohup java -jar $projectpath/$projectname-$version.jar --server.port=$port > $projectpath/nohup.out 2>&1 &
+
+    - echo "✅ Deployment hoàn tất!"
+  tags:
+    - ubuntu-srv
+  only:
+    - tags
+
+showlog:
+  stage: showlog
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "🔍 Kiểm tra log dự án..."
+    - sudo su $projectuser
+    - cd $projectpath
+    - ls
+    - tail -n 10000 nohup.out
+  tags:
+    - ubuntu-srv
+  only:
+    - tags
+
+```
+
+```
+Config(piline): fix jobname showlog
+```
+
+![image](https://github.com/user-attachments/assets/5582b973-ec6e-4082-b2bd-3013ce2ed0d0)
+
