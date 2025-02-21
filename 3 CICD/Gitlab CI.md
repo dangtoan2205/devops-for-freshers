@@ -525,6 +525,106 @@ sudo ufw reload
 ![image](https://github.com/user-attachments/assets/6a6f29f0-ce36-49f4-899b-6150d38384cb)
 
 
+Đặt biến sử dụng
+------
+```
+variables:
+  projectname: shoe-ShoppingCart
+  version: 0.0.1-SNAPSHOT
+  projectuser: shoeshop
+  projectpath: /datas/$projectuser
+  port: 8081
+
+
+stages:
+  - build
+  - deploy
+  - checklog
+
+build:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone 
+  script:
+    - echo "🔍 Kiểm tra JDK..."
+    - |
+      if which java > /dev/null && java -version 2>&1 | grep "17"; then
+        echo "✅ JDK 17 đã được cài đặt."
+      else
+        echo "❌ JDK 17 chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra Maven..."
+    - |
+      if which mvn > /dev/null; then
+        echo "✅ Maven đã được cài đặt."
+      else
+        echo "❌ Maven chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra MariaDB..."
+    - |
+      if systemctl is-active --quiet mariadb || which mariadb > /dev/null; then
+        echo "✅ MariaDB đã được cài đặt và đang chạy."
+      else
+        echo "❌ MariaDB chưa được cài hoặc không hoạt động."
+      fi
+
+    - echo "🔍 Kiểm tra Docker..."
+    - |
+      if which docker > /dev/null && docker --version; then
+        echo "✅ Docker đã được cài đặt."
+      else
+        echo "❌ Docker chưa được cài."
+      fi
+
+    - mvn install -DskipTests=true
+  tags:
+    - ubuntu-srv
+
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "🔍 Chuyển sang user '$projectuser' để kiểm tra và kill tiến trình cũ..."
+    - |
+      sudo su $projectuser -c '
+        OLD_PID=$(ps -ef | grep "$projectname-$version.jar" | grep -v grep | awk "{print \$2}")
+        if [ -n "$OLD_PID" ]; then
+          echo "⚠️ Tiến trình cũ đang chạy với PID: $OLD_PID"
+          echo "🛑 Dừng tiến trình cũ..."
+          kill -9 $OLD_PID || echo "⚠️ Không thể kill PID $OLD_PID"
+          sleep 5
+        else
+          echo "✅ Không có tiến trình $projectuser cũ đang chạy."
+        fi
+      '
+
+    - echo "🚀 Copy project mới..."
+    - cd /home/gitlab-runner/builds/fyapp6-u/0/$projectuser/$projectuser/target
+    - sudo cp $projectname-$version.jar /datas/$projectuser/
+    - sudo chown -R gitlab-runner:gitlab-runner $projectpath
+
+    - echo "🔑 Chuyển sang user '$projectuser' để triển khai..."
+    - sudo su $projectuser
+    - cd $projectpath
+    - ls
+    - echo "🚀 Khởi chạy project mới..."
+    - nohup java -jar /datas/$projectuser/$projectname-$version.jar --server.port=$port > /datas/$projectuser/app.log 2>&1 &
+
+    - echo "✅ Deployment hoàn tất!"
+  tags:
+    - ubuntu-srv
+
+```
+
+```
+ps -ef| grep shoeshop
+```
+
+![image](https://github.com/user-attachments/assets/07b447b8-3f4b-4901-9f30-3c4d406c850a)
+
 
 
 
