@@ -626,9 +626,85 @@ ps -ef| grep shoeshop
 ![image](https://github.com/user-attachments/assets/07b447b8-3f4b-4901-9f30-3c4d406c850a)
 
 
+Connect database
+----
 
+`shoeshop` -> `src` -> `main` -> `resources` -> `application.properties`
 
+```
+# ===============================
+# DATABASE
+# ===============================
+ 
+spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+ 
+spring.datasource.url=jdbc:mysql://192.168.81.31:3306/shoeshop
+spring.datasource.username=shoeshop
+spring.datasource.password=shoeshop
+  
+ 
+ 
+# ===============================
+# JPA / HIBERNATE
+# ===============================
+ 
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=none
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQLDialect
+spring.jpa.properties.hibernate.current_session_context_class=org.springframework.orm.hibernate5.SpringSessionContext
+```
 
+Add user database shoeshop
+-------
 
+```
+mysql -u root
+```
 
+```
+show databases;
+```
 
+```
+create database shoeshop;
+create user 'shoeshop'@'%' identified by 'shoeshop';
+grant all privileges on shoeshop.* to 'shoeshop'@'%';
+flush privileges;
+```
+
+Public database port 0.0.0.0
+------
+
+```
+netstat -tlpun
+```
+
+```
+systemctl stop mariadb
+```
+
+```
+ls /etc/mysql/mariadb.conf.d/
+```
+
+```
+nano /etc/mysql/mariadb.conf.d/50-server.cnf
+```
+
+Đổi `127.0.0.1`
+
+![image](https://github.com/user-attachments/assets/dfe4a189-f484-44af-b36a-e438bad1173f)
+
+Thành `0.0.0.0`
+
+![image](https://github.com/user-attachments/assets/2da5cf05-40d2-4263-8ca6-dd0a236657c1)
+
+```
+systemctl restart mariadb
+```
+
+```
+netstat -tplun
+```
+
+![image](https://github.com/user-attachments/assets/b6446753-fd1b-4eb7-8bbb-280d7af5a1e6)
