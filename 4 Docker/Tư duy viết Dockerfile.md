@@ -59,10 +59,13 @@ Viết Dockerfile tối ưu
 ![image](https://github.com/user-attachments/assets/b0261c22-6e2e-4edf-a438-8394352db537)
 
 
+![image](https://github.com/user-attachments/assets/3b4dbc77-4feb-4e7f-a096-824c2678744c)
 
 
+![image](https://github.com/user-attachments/assets/9f6d7dd6-2419-4e67-b4c3-1089971314bc)
 
 
+![image](https://github.com/user-attachments/assets/94ded83c-7fd3-4dcf-822e-19831f349803)
 
 
 
