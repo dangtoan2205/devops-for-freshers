@@ -45,8 +45,11 @@ docker rmi ubuntu:22.04
 docker rm -f $(docker ps -a)
 ```
 
+![image](https://github.com/user-attachments/assets/8c47187e-dace-4d7c-9b88-dd45fcff6e92)
 
+![image](https://github.com/user-attachments/assets/e368a36d-3d53-4480-8b32-a94429f978ce)
 
+![image](https://github.com/user-attachments/assets/9b9df305-4a3f-478d-8976-9481074ad007)
 
 
 
