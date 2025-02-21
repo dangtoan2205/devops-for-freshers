@@ -267,6 +267,13 @@ gitlab-runner ALL=(ALL:ALL) được hiểu là áp dụng cho user,group ALL(us
 
 ![image](https://github.com/user-attachments/assets/060c1923-1c31-4900-9c0c-29b52f983566)
 
+Tạo thư mục mới
+
+```
+mkdir /datas
+mkdir /datas/shoeshop
+```
+
 -> Cấu hình trên file .gitlab-ci.yml
 -------------
 
@@ -274,50 +281,248 @@ gitlab-runner ALL=(ALL:ALL) được hiểu là áp dụng cho user,group ALL(us
 
 ```
 stages:
-    - build
-    - deploy
-    - checklog
+  - build
+  - deploy
+  - checklog
 
 build:
-    stage: build
-    variables:
-        GIT_STRATEGY: clone # Tiến hành clone code mới về
-    script:
-        - mvn clean install -DskipTests
-    tags:
-        - gitlab-server
+  stage: build
+  variables:
+        GIT_STRATEGY: clone 
+  script:
+    - echo "🔍 Kiểm tra JDK..."
+    - |
+      if which java > /dev/null && java -version 2>&1 | grep "17"; then
+        echo "✅ JDK 17 đã được cài đặt."
+      else
+        echo "❌ JDK 17 chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra Maven..."
+    - |
+      if which mvn > /dev/null; then
+        echo "✅ Maven đã được cài đặt."
+      else
+        echo "❌ Maven chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra MariaDB..."
+    - |
+      if systemctl is-active --quiet mariadb || which mariadb > /dev/null; then
+        echo "✅ MariaDB đã được cài đặt và đang chạy."
+      else
+        echo "❌ MariaDB chưa được cài hoặc không hoạt động."
+      fi
+
+    - echo "🔍 Kiểm tra Docker..."
+    - |
+      if which docker > /dev/null && docker --version; then
+        echo "✅ Docker đã được cài đặt."
+      else
+        echo "❌ Docker chưa được cài."
+      fi
+
+    - mvn install -DskipTests=true
+  tags:
+    - ubuntu-srv
+
+deploy: 
+  stage: deploy
+  variables:
+        GIT_STRATEGY: none
+  script:
+    - cd /home/gitlab-runner/builds/fyapp6-u/0/shoeshop/shoeshop/target
+    - sudo cp shoe-ShoppingCart-0.0.1-SNAPSHOT.jar /datas/shoeshop/
+    - cd /datas/shoeshop/
+    - sudo chown -R shoeshop:shoeshop /datas/shoeshop
+    - sudo su shoeshop
+    - nohup java -jar shoe-ShoppingCart-0.0.1-SNAPSHOT.jar 2>&1 &
+  tags:
+    - ubuntu-srv
+
+```
+
+```
+stages:
+  - build
+  - deploy
+  - checklog
+
+build:
+  stage: build
+  variables:
+        GIT_STRATEGY: clone 
+  script:
+    - echo "🔍 Kiểm tra JDK..."
+    - |
+      if which java > /dev/null && java -version 2>&1 | grep "17"; then
+        echo "✅ JDK 17 đã được cài đặt."
+      else
+        echo "❌ JDK 17 chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra Maven..."
+    - |
+      if which mvn > /dev/null; then
+        echo "✅ Maven đã được cài đặt."
+      else
+        echo "❌ Maven chưa được cài."
+      fi
+
+    - echo "🔍 Kiểm tra MariaDB..."
+    - |
+      if systemctl is-active --quiet mariadb || which mariadb > /dev/null; then
+        echo "✅ MariaDB đã được cài đặt và đang chạy."
+      else
+        echo "❌ MariaDB chưa được cài hoặc không hoạt động."
+      fi
+
+    - echo "🔍 Kiểm tra Docker..."
+    - |
+      if which docker > /dev/null && docker --version; then
+        echo "✅ Docker đã được cài đặt."
+      else
+        echo "❌ Docker chưa được cài."
+      fi
+
+    - mvn install -DskipTests=true
+  tags:
+    - ubuntu-srv
 
 deploy:
-    stage: deploy
-    variables:
-        GIT_STRATEGY: none # Test
-    script:
-        - mkdir -p /datas/shoeshop
-        - cd $CI_PROJECT_DIR # Copy shoe-ShoppingCart-0.0.1-SNAPSHOT.jar vào thư mục /datas/shoeshop
-        - sudo chown -R shoeshop:shoeshop /datas/shoeshop # cấp quyền sở hữu cho shoeshop
-        - sudo su shoeshop -c "cd /datas/shoeshop/; nohup java -jar shoe-ShoppingCart-0.0.1-SNAPSHOT.jar 2>&1 &" # chuyển qua user shoeshop và cd vào /datas/shoeshop và chạy dự án
-    tags:
-        - gitlab-server
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    # - echo "🔍 Kiểm tra và dừng tiến trình cũ trên cổng 8080 nếu có..."
+    # - |
+    #   PID=$(sudo lsof -ti:8080)
+    #   if [ -n "$PID" ]; then
+    #     echo "⚠️  Tiến trình cũ đang chạy với PID: $PID"
+    #     echo "🛑 Dừng tiến trình cũ..."
+    #     sudo kill -9 $PID
+    #     sleep 5
+    #   else
+    #     echo "✅ Không có tiến trình nào chạy trên cổng 8080."
+    #   fi
 
+    - echo "🚀 Triển khai project mới..."
+    - cd /home/gitlab-runner/builds/fyapp6-u/0/shoeshop/shoeshop/target
+    - sudo cp shoe-ShoppingCart-0.0.1-SNAPSHOT.jar /datas/shoeshop/
+    - sudo chown -R gitlab-runner:gitlab-runner /datas/shoeshop
+    - sudo su shoeshop
+    - cd /datas/shoeshop
+    - ls
+    - echo "🚀 Khởi chạy project mới..."
+    - nohup java -jar /datas/shoeshop/shoe-ShoppingCart-0.0.1-SNAPSHOT.jar --server.port=8081 > /datas/shoeshop/app.log 2>&1 &
+
+    - echo "✅ Deployment hoàn tất!"
+  tags:
+    - ubuntu-srv
 ```
 
 ```
 Config(pipeline): add script deploy stage
 ```
 
+```
+stages:
+  - build
+  - deploy
+  - checklog
 
+build:
+  stage: build
+  variables:
+    GIT_STRATEGY: clone 
+  script:
+    - echo "🔍 Kiểm tra JDK..."
+    - |
+      if which java > /dev/null && java -version 2>&1 | grep "17"; then
+        echo "✅ JDK 17 đã được cài đặt."
+      else
+        echo "❌ JDK 17 chưa được cài."
+      fi
 
+    - echo "🔍 Kiểm tra Maven..."
+    - |
+      if which mvn > /dev/null; then
+        echo "✅ Maven đã được cài đặt."
+      else
+        echo "❌ Maven chưa được cài."
+      fi
 
+    - echo "🔍 Kiểm tra MariaDB..."
+    - |
+      if systemctl is-active --quiet mariadb || which mariadb > /dev/null; then
+        echo "✅ MariaDB đã được cài đặt và đang chạy."
+      else
+        echo "❌ MariaDB chưa được cài hoặc không hoạt động."
+      fi
 
+    - echo "🔍 Kiểm tra Docker..."
+    - |
+      if which docker > /dev/null && docker --version; then
+        echo "✅ Docker đã được cài đặt."
+      else
+        echo "❌ Docker chưa được cài."
+      fi
 
+    - mvn install -DskipTests=true
+  tags:
+    - ubuntu-srv
 
+deploy:
+  stage: deploy
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - echo "🔍 Chuyển sang user 'shoeshop' để kiểm tra và kill tiến trình cũ..."
+    - |
+      sudo su shoeshop -c '
+        OLD_PID=$(ps -ef | grep "shoe-ShoppingCart-0.0.1-SNAPSHOT.jar" | grep -v grep | awk "{print \$2}")
+        if [ -n "$OLD_PID" ]; then
+          echo "⚠️ Tiến trình cũ đang chạy với PID: $OLD_PID"
+          echo "🛑 Dừng tiến trình cũ..."
+          kill -9 $OLD_PID || echo "⚠️ Không thể kill PID $OLD_PID"
+          sleep 5
+        else
+          echo "✅ Không có tiến trình shoeshop cũ đang chạy."
+        fi
+      '
 
+    - echo "🚀 Copy project mới..."
+    - cd /home/gitlab-runner/builds/fyapp6-u/0/shoeshop/shoeshop/target
+    - sudo cp shoe-ShoppingCart-0.0.1-SNAPSHOT.jar /datas/shoeshop/
+    - sudo chown -R gitlab-runner:gitlab-runner /datas/shoeshop
 
+    - echo "🔑 Chuyển sang user 'shoeshop' để triển khai..."
+    - sudo su shoeshop
+    - cd /datas/shoeshop
+    - ls
+    - echo "🚀 Khởi chạy project mới..."
+    - nohup java -jar /datas/shoeshop/shoe-ShoppingCart-0.0.1-SNAPSHOT.jar --server.port=8081 > /datas/shoeshop/app.log 2>&1 &
 
+    - echo "✅ Deployment hoàn tất!"
+  tags:
+    - ubuntu-srv
 
+```
 
+```
+kill -9 $( ps -ef| grep shoe-ShoppingCart-0.0.1-SNAPSHOT.jar | grep -v grep | awk '{print $2}')
+```
 
+```
+ps -ef| grep shoeshop
+````
 
+```
+sudo ufw allow 8081
+sudo ufw reload
+```
+
+![image](https://github.com/user-attachments/assets/6a6f29f0-ce36-49f4-899b-6150d38384cb)
 
 
 
